@@ -6,7 +6,6 @@
 #define OLED_I2C hi2c2
 #define OLED_ADD 0x78 // 0b01111000
 
-extern uint8_t numbers_8x8[10][8];
 extern uint8_t GRAM0[128];
 extern uint8_t GRAM1[128];
 extern uint8_t GRAM2[128];
