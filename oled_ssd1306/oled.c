@@ -11,7 +11,7 @@ uint8_t GRAM7[128];
 uint8_t *GRAMz[8] =
 { GRAM0, GRAM1, GRAM2, GRAM3, GRAM4, GRAM5, GRAM6, GRAM7 };
 
-uint8_t numbers_8x8[10][8] =
+const uint8_t numbers_8x8[10][8] =
 {
 { 0x00, 0x00, 0x3c, 0x42, 0x42, 0x3c, 0x00, 0x00 }, // 0
 		{ 0x00, 0x00, 0x44, 0x42, 0x7e, 0x40, 0x00, 0x00 }, // 1
@@ -25,7 +25,7 @@ uint8_t numbers_8x8[10][8] =
 		{ 0x00, 0x00, 0x4c, 0x52, 0x52, 0x3c, 0x00, 0x00 }, // 9
 		};
 
-uint8_t latin_8x8[28][8] =
+const uint8_t latin_8x8[28][8] =
 {
 { 0x00, 0xf8, 0x24, 0x24, 0x24, 0xf8, 0x00, 0x00 }, // 00 A
 		{ 0x00, 0xfc, 0x94, 0x94, 0x94, 0x78, 0x00, 0x00 }, // 01 B
@@ -57,7 +57,7 @@ uint8_t latin_8x8[28][8] =
 		{ 0x00, 0xfc, 0x0a, 0x31, 0x42, 0xfd, 0x00, 0x00 }, // 27 Ñ
 		};
 
-uint8_t cylil_8x8[][8] =
+const uint8_t cylil_8x8[][8] =
 {
 { 0x00, 0xf8, 0x24, 0x24, 0x24, 0xf8, 0x00, 0x00 }, // 0 А
 		{ 0x00, 0xfc, 0x94, 0x94, 0x94, 0x64, 0x00, 0x00 }, // 1 Б
@@ -93,6 +93,31 @@ void oled_NewFrame()
 		for (n = 0; n < 128; n++)
 		{
 			GRAMz[m][n] = zero;
+		}
+	}
+}
+
+void oled_SoftCirculation()
+{
+	uint8_t m, n;
+	for (m = 0; m < 8; m++)
+	{
+		GRAMz[m][127] = GRAMz[m][0];
+		for (n = 0; n < 127; n++)
+		{
+			GRAMz[m][n] = GRAMz[m][n + 1];
+		}
+	}
+}
+
+void oled_SoftRolling()
+{
+	uint8_t m, n;
+	for (m = 0; m < 8; m++)
+	{
+		for (n = 0; n < 128; n++)
+		{
+			GRAMz[m][n] = GRAMz[m][n + 1];
 		}
 	}
 }
@@ -151,38 +176,45 @@ void oled_Test()
 	} // update
 }
 
-void oled_SoftRolling()
-{
-	uint8_t m, n;
-	for (m = 0; m < 8; m++)
-	{
-		for (n = 0; n < 128; n++)
-		{
-			GRAMz[m][n] = GRAMz[m][n + 1];
-		}
-	}
-}
-
-void oled_SetPixel(uint8_t x, uint8_t y)
+void oled_SetPixel(uint16_t x, uint16_t y)
 {
 	if (x >= 128 || y >= 64)
 		return;
 	GRAMz[y / 8][x] |= 0b1 << (y % 8);
 }
 
-void oled_ShowImage(const uint8_t *image, uint8_t size_x, uint8_t size_y)
+void oled_SetFrist()
 {
-	uint16_t i = 0;
-	for (uint8_t x = 0; x < size_x; x++)
-	{
-		for (uint8_t y = 0; y < (size_y / 8); y++)
-		{
-			GRAMz[y][x] = image[i];
-			i++;
-		}
-	}
+	for (uint8_t i = 0; i < 8; i++)
+		GRAMz[i][0] = 0x00;
 }
 
+void oled_SetPoint(uint16_t x, uint16_t y)
+{
+	if (x >= 128)
+		x = 127;
+	if (x < 0)
+		x = 0;
+	if (y >= 64)
+		y = 63;
+	if (y < 0)
+		y = 0;
+	GRAMz[y / 8][x] |= 0b1 << (y % 8);
+}
+/*
+ void oled_ShowImage(const uint8_t *image, uint8_t size_x, uint8_t size_y)
+ {
+ uint16_t i = 0;
+ for (uint8_t x = 0; x < size_x; x++)
+ {
+ for (uint8_t y = 0; y < (size_y / 8); y++)
+ {
+ GRAMz[y][x] = image[i];
+ i++;
+ }
+ }
+ }
+ */
 void oled_ProgressBar(uint8_t count)
 {
 	uint8_t length = count / 2;
@@ -210,21 +242,21 @@ void oled_ShowLatin(uint8_t c, uint8_t position, uint8_t line)
 			|| line < 0 || line > 8)
 		return;
 	uint8_t n;
-	for (n = position; n < (position + 8); n++)
+	for (n = 0; n < 8; n++)
 	{
-		GRAMz[line][n] = latin_8x8[c][n - position];
+		GRAMz[line][n + position] = latin_8x8[c][n];
 	}
 }
 
 void oled_ShowCylil(uint8_t c, uint8_t position, uint8_t line)
 {
-	if (c < 0 || c > sizeof(latin_8x8) || position > 120 || position < 0
+	if (c < 0 || c > sizeof(cylil_8x8) || position > 120 || position < 0
 			|| line < 0 || line > 8)
 		return;
 	uint8_t n;
-	for (n = position; n < (position + 8); n++)
+	for (n = 0; n < 8; n++)
 	{
-		GRAMz[line][n] = cylil_8x8[c][n - position];
+		GRAMz[line][n + position] = cylil_8x8[c][n];
 	}
 }
 
@@ -263,6 +295,22 @@ void oled_ShowLatinTest()
 	}
 }
 
+void oled_ShowLanguageTest()
+{
+	const char english[] =
+	{ 4, 13, 6, 11, 8, 18, 7 };
+	const char espanol[] =
+	{ 4, 18, 15, 0, 27, 14, 11 };
+	const char russkij[] =
+	{ 6, 3, 7, 7, 8, 4, 5 };
+	const char deutsch[] =
+	{ 3, 4, 20, 19, 18, 2, 7 };
+	oled_ShowLatinS((uint8_t*) espanol, sizeof(espanol), 0, 4);
+	oled_ShowLatinS((uint8_t*) english, sizeof(english), 0, 5);
+	oled_ShowLatinS((uint8_t*) deutsch, sizeof(deutsch), 0, 6);
+	oled_ShowCylilS((uint8_t*) russkij, sizeof(russkij), 0, 7);
+}
+
 void oled_ShowNumberTest()
 {
 	oled_ShowNumber(0, 0, 0);
@@ -275,6 +323,55 @@ void oled_ShowNumberTest()
 	oled_ShowNumber(7, 56, 0);
 	oled_ShowNumber(8, 64, 0);
 	oled_ShowNumber(9, 72, 0);
+}
+
+void oled_HW_rolling_stop()
+{
+	oled_Write_Command(0x2E); // rolling stop
+}
+void oled_HW_rolling_start()
+{
+	oled_Write_Command(0x2F); // rolling start
+}
+void oled_HW_rolling()
+{
+	oled_Write_Command(0x27); // left
+	oled_Write_Command(0x00); // none
+	oled_Write_Command(0x00); // line start
+	oled_Write_Command(0x00); // speed
+	oled_Write_Command(0x07); // line stop
+	oled_Write_Command(0x00); // row start
+	oled_Write_Command(0x7F); // row stop
+}
+
+void oled_DrawCircle(uint16_t x0, uint16_t y0, uint8_t r)
+{
+	uint32_t a, b;
+	uint32_t di;
+	a = 0;
+	b = r;
+	di = 3 - (r << 1);
+	while (a <= b)
+	{
+		oled_SetPixel(x0 + a, y0 - b); // 5
+		oled_SetPixel(x0 + b, y0 - a); // 0
+		oled_SetPixel(x0 + b, y0 + a); // 4
+		oled_SetPixel(x0 + a, y0 + b); // 6
+		oled_SetPixel(x0 - a, y0 + b); // 1
+		oled_SetPixel(x0 - b, y0 + a);
+		oled_SetPixel(x0 - a, y0 - b); // 2
+		oled_SetPixel(x0 - b, y0 - a); // 7
+		a++;
+
+		// Bresenham
+		if (di < 0)
+			di += 4 * a + 6;
+		else
+		{
+			di += 10 + 4 * (a - b);
+			b--;
+		}
+	}
 }
 
 void oled_Init()
