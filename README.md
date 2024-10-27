@@ -1,17 +1,19 @@
 # STM32:Peripheral Drivers
-本库存储`STM32F103ZET6`的外设驱动
-开发板使用**正点原子/精英版STM32F103**
+1. 本库存储 `STM32F103ZET6` 的外设驱动
+2. 开发板使用的*正点原子/精英版STM32F103*(**这不是广告**)
+3. 作者能力有限,这些代码和文档难免会有错误和不足,请谅解或提交**Issue**
+
+## § 0x00 感谢名单 Bilibili
+*这些链接通往他们的B站个人页面*
+- [大明狐](https://space.bilibili.com/3162360)
+    提供的 OLED 0.96 教程和踩坑
+- [keysking](https://space.bilibili.com/6100925)
+    提供的最精致的 STM32 系列教程
+- [一直在入门啊](https://space.bilibili.com/2044983862)
+    提供的没有废话清晰明了的 STM32 系列教程
 
 
-## RotaryEncoder
-旋转编码器
-
-
-## DigitalTube
-数码管
-
-
-## OLED(0.96) SSD1306
+## § 0x01 OLED(0.96) SSD1306
 OLED 显示器(0.96 寸)
 ### SSD1306 i2c address: `0x78`
 |   7   |   6   |   5   |   4   |   3   |   2   |   1   |  R/W  |
@@ -27,7 +29,7 @@ OLED 显示器(0.96 寸)
 6. 进度条
 
 
-## EEPROM 24C02
+## § 0x02 EEPROM 24C02
 24C02 带电可擦可编程只读存储器
 ### 24C02 i2c address: `0xA0` (当`A0`,`A1`,`A2`接地时`GND`)
 |   7   |   6   |   5   |   4   |  A2   |  A1   |  A0   |  R/W  |
@@ -38,4 +40,13 @@ OLED 显示器(0.96 寸)
 1. 检测该设备是否存在
 2. 按位读取函数
 3. 按位写入函数
+
+
+## RotaryEncoder
+旋转编码器
+
+
+## DigitalTube
+数码管
+
 
