@@ -17,13 +17,18 @@ extern uint8_t GRAM7[128];
 extern uint8_t *GRAMz[8];
 
 HAL_StatusTypeDef oled_Write_Command(uint8_t i2c_cmd);
+HAL_StatusTypeDef oled_Write_Data(uint8_t i2c_cmd);
 void oled_Init();
 void oled_Clear();
 void oled_Full();
 void oled_Test();
 void oled_ShowFrame();
+void oled_SoftCirculation();
+void oled_SoftRolling();
 void oled_NewFrame();
-void oled_SetPixel(uint8_t x, uint8_t y);
+void oled_SetPixel(uint16_t x, uint16_t y);
+void oled_SetFrist();
+void oled_SetPoint(uint16_t x, uint16_t y);
 void oled_ProgressBar(uint8_t count);
 void oled_ShowNumber(uint8_t num, uint8_t position, uint8_t line);
 void oled_ShowLatin(uint8_t num, uint8_t position, uint8_t line);
@@ -33,7 +38,11 @@ void oled_ShowCylil(uint8_t c, uint8_t position, uint8_t line);
 void oled_ShowCylilS(uint8_t *chars, uint8_t size, uint8_t position,
 		uint8_t line);
 void oled_ShowLatinTest();
+void oled_ShowLanguageTest();
 void oled_ShowNumberTest();
-void oled_SoftRolling();
-void oled_ShowImage(const uint8_t *image, uint8_t size_x, uint8_t size_y);
+void oled_HW_rolling_stop();
+void oled_HW_rolling_start();
+void oled_HW_rolling();
+void oled_DrawCircle(uint16_t x0, uint16_t y0, uint8_t r);
+//void oled_ShowImage(const uint8_t *image, uint8_t size_x, uint8_t size_y);
 #endif /* INC_OLDE_H_ */
