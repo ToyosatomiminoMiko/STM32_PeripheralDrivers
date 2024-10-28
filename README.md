@@ -1,16 +1,20 @@
-# STM32:Peripheral Drivers
-1. 本库存储 `STM32F103ZET6` 的外设驱动
+# STM32: Peripheral Drivers
+1. 本存储库是 `STM32F103ZET6` 的外设驱动
 2. 开发板使用的*正点原子/精英版STM32F103*(**这不是广告**)
 3. 作者能力有限,这些代码和文档难免会有错误和不足,请谅解或提交**Issue**
+4. 本存储库的许可证不适用于**正点原子团队(ALIENTEK)的代码**copyright归原作者所有,在此仅用于学习
 
 ## § 0x00 感谢名单 Bilibili
-*这些链接通往他们的B站个人页面*
-- [大明狐](https://space.bilibili.com/3162360)
-    提供的 OLED 0.96 教程和踩坑
-- [keysking](https://space.bilibili.com/6100925)
+他们的代码给了我重要的参考,放在这里以表示感谢
+- [大明狐(B站主页)](https://space.bilibili.com/3162360)<br>
+    提供的 OLED 0.96 教程和大量的踩坑
+- [keysking(B站主页)](https://space.bilibili.com/6100925)<br>
+    [keysking(站内主页)](https://github.com/keysking)<br>
     提供的最精致的 STM32 系列教程
-- [一直在入门啊](https://space.bilibili.com/2044983862)
-    提供的没有废话清晰明了的 STM32 系列教程
+- [一直在入门啊(B站主页)](https://space.bilibili.com/2044983862)<br>
+    提供的没有废话清晰明了的 STM32 系列教程<br>
+    [一直在入门啊(gitee教程代码)](https://gitee.com/siyu233/Stm32Code_1)<br>
+    教程的代码也采用了*GPL-3.0*
 
 
 ## § 0x01 OLED(0.96) SSD1306
