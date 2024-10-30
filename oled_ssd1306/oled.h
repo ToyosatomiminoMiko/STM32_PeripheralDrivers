@@ -6,15 +6,7 @@
 #define OLED_I2C hi2c2
 #define OLED_ADD 0x78 // 0b01111000
 
-extern uint8_t GRAM0[128];
-extern uint8_t GRAM1[128];
-extern uint8_t GRAM2[128];
-extern uint8_t GRAM3[128];
-extern uint8_t GRAM4[128];
-extern uint8_t GRAM5[128];
-extern uint8_t GRAM6[128];
-extern uint8_t GRAM7[128];
-extern uint8_t *GRAMz[8];
+extern uint8_t GRAM[8][128];
 
 HAL_StatusTypeDef oled_Write_Command(uint8_t i2c_cmd);
 HAL_StatusTypeDef oled_Write_Data(uint8_t i2c_cmd);
