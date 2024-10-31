@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="zh">
+    
+<head>
+    <meta charset="utf-8">
+    <title>OLED</title>
+    <base href="" target="_blank">
+    <style type="text/css">
+        #oled {
+            border: 5px solid #ff0000;
+            background-color: #878c9c;
+        }
+    </style>
+</head>
+
+<body>
+    <canvas id="oled" width="1538" height="770">
+        您的浏览器不支持 HTML5 canvas 标签 (悲)</canvas>
+</body>
+    
+<script type="text/javascript">
+    // OLED size
+    const oled_width = 128;
+    const oled_height = 8;
+    // virtual OLED 
+    var oled = new Array(oled_height);
+    for (let i = 0; i < oled.length; i++) {
+        oled[i] = new Array(oled_width).fill(0x0);
+    }
+    // canvas setting
+    const pixel_size = 10;
+    const spacing = 2;
+    var canvas = document.getElementById("oled");
+    var ctx = canvas.getContext("2d");
+
+    // edit oled
+    //for (let m = 0; m < oled_height; m++) {
+    //for (let n = 0; n < oled_width; n++) {
+    oled[5][64] = 0b11100011;
+    oled[7][127] = 0b10100101;
+    //}
+    //}
+
+
+    // oled show
+    for (var w = 0; w < oled_width; w++) {
+        for (var h = 0; h < oled_height; h++) {
+            for (var i = 0; i < 8; i++) {
+                if (((oled[h][w] >> i) & 0b1) == 1) {
+                    ctx.fillStyle = "white";
+                } else {
+                    ctx.fillStyle = "black";
+                }
+                ctx.fillRect(2 + w * spacing + w * pixel_size,
+                    ((8 - i) * spacing + (8 - i) * pixel_size) +
+                    (8 * h * spacing + 8 * h * pixel_size - 10),
+                    pixel_size, pixel_size);
+            }
+        }
+    }
+
+    // dump
+    for (var y = 0; y < oled_height; y++) {
+        for (var x = 0; x < oled_width; x++) {
+            console.log("0x", oled[y][x].toString(16));
+        }
+    }
+</script>
+</html>
