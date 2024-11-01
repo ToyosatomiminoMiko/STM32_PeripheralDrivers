@@ -34,6 +34,7 @@ OLED 显示器(0.96 寸)
 ### 图形调试器
 - `oled_debugger.html`用于验证绘图算法, 纯前端实现
 
+
 ## § 0x02 EEPROM 24C02
 24C02 带电可擦可编程只读存储器
 ### 24C02 i2c address: `0xA0` (当`A0`,`A1`,`A2`接地时`GND`)
@@ -56,9 +57,12 @@ OLED 显示器(0.96 寸)
 
 
 ## FSMC_TFT-LCD
-薄膜晶体管液晶显示器
-***代码来自正点原子***
+- *Thin film transistor liquid crystal display*
+- **薄膜晶体管液晶显示器**
+- ***代码来自正点原子***
+- 型号: `ST7789`
 
-
-SSE 600519 605337
-
+## VFD
+- *Vacuum Fluorescent Display*
+- **真空荧光显示器**
+- 型号: `CIG25-1605N`
