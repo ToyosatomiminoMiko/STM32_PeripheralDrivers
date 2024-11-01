@@ -36,5 +36,6 @@ void oled_HW_rolling_stop();
 void oled_HW_rolling_start();
 void oled_HW_rolling();
 void oled_DrawCircle(uint16_t x0, uint16_t y0, uint8_t r);
-//void oled_ShowImage(const uint8_t *image, uint8_t size_x, uint8_t size_y);
+void oled_ShowImage(uint8_t *image);
+
 #endif /* INC_OLDE_H_ */
