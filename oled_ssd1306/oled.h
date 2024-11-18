@@ -37,5 +37,6 @@ void oled_HW_rolling_start();
 void oled_HW_rolling();
 void oled_DrawCircle(uint16_t x0, uint16_t y0, uint8_t r);
 void oled_ShowImage(uint8_t *image);
+void oled_ShowChinese_16x16(uint8_t x0, uint8_t y0, uint8_t *ChineseChar);
 
 #endif /* INC_OLDE_H_ */
