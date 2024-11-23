@@ -56,5 +56,7 @@ void vfd_DisplayString(const unsigned char row, const unsigned char col,
 		const unsigned char *data, const uint8_t size);
 void tft_Fill(uint8_t data);
 void tft_Refresh();
-void tft_Clear();
+uint32_t tft_pow(uint8_t m, uint8_t n);
+void tft_DrawPoint(uint16_t x, uint16_t y, uint8_t mode);
+void tft_DrawCircle(uint16_t x0, uint16_t y0, uint8_t r);
 #endif /* BSP_SOFTWARE_SPI_SW_SPI_H_ */
