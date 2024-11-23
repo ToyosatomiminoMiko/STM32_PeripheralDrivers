@@ -1,6 +1,22 @@
 #include "sw_spi.h"
 
 uint8_t TFT_GRAM[4125];
+/*
+ const uint8_t fonts[4][32] =
+ {
+ { 0x00, 0x00, 0xFE, 0x3F, 0x80, 0x00, 0x80, 0x00, 0x80, 0x00, 0x80, 0x00, 0x80,
+ 0x00, 0xFC, 0x1F, 0x80, 0x00, 0x80, 0x00, 0x80, 0x00, 0x80, 0x00, 0x80,
+ 0x00, 0x80, 0x00, 0xFF, 0x7F, 0x00, 0x00 },//"王",0
+ { 0x40, 0x10, 0x84, 0x08, 0x08, 0x00, 0xE8, 0x3F, 0x00, 0x01, 0xC0, 0x1F, 0x4F,
+ 0x10, 0xC8, 0x1F, 0x48, 0x10, 0xC8, 0x1F, 0x48, 0x10, 0xC8, 0x1F, 0x48,
+ 0x10, 0x14, 0x00, 0xE2, 0x7F, 0x00, 0x00 },//"道",1
+ { 0x10, 0x00, 0x10, 0x00, 0xC8, 0x7F, 0x04, 0x04, 0x12, 0x04, 0x10, 0x04, 0x88,
+ 0x04, 0x8C, 0x04, 0x8A, 0x3C, 0x89, 0x04, 0x88, 0x04, 0x88, 0x04, 0x88,
+ 0x04, 0x88, 0x04, 0xE8, 0x7F, 0x08, 0x00 },//"征",2
+ { 0x00, 0x02, 0x04, 0x05, 0x88, 0x08, 0x48, 0x10, 0xA0, 0x6F, 0x00, 0x02, 0x0F,
+ 0x02, 0xE8, 0x3F, 0x08, 0x02, 0x48, 0x12, 0x48, 0x22, 0x28, 0x22, 0x88,
+ 0x02, 0x14, 0x01, 0xE2, 0x7F, 0x00, 0x00 }, //"途",3
+ };*/
 
 // HSB first
 void spi_HfSendByte(uint8_t byte)
@@ -13,9 +29,9 @@ void spi_HfSendByte(uint8_t byte)
 		else
 			TFT_SDA_RESET;
 		byte = byte << 1;
-		HAL_Delay(1);
+		//HAL_Delay(1);
 		TFT_SCL_SET;
-		HAL_Delay(1);
+		//HAL_Delay(1);
 	}
 }
 
@@ -30,9 +46,9 @@ void spi_LfSendByte(uint8_t byte)
 		else
 			VFD_DATA_RESET;
 		byte = byte >> 1;
-		HAL_Delay(1);
+		//HAL_Delay(1);
 		VFD_CLK_SET;
-		HAL_Delay(1);
+		//HAL_Delay(1);
 	}
 }
 
@@ -93,7 +109,7 @@ void vfd_Init(uint8_t brightness)
 
 void tft_Init(void)
 {
-	//LCD_GPIO_Init(); // init GPIO
+	//tft_GPIO_Init(); // init GPIO
 
 	TFT_RES_RESET; // reset
 	HAL_Delay(100);
@@ -311,16 +327,66 @@ void tft_Refresh()
 		}
 	}
 }
-void tft_Clear()
+
+uint32_t tft_pow(uint8_t m, uint8_t n)
 {
-	tft_WriteCmd(0x2A);
-	tft_WriteData(0x19);
-	tft_WriteData(0x23);
-	tft_WriteCmd(0x2B);
-	tft_WriteData(0x00);
-	tft_WriteData(0x7C);
-	tft_WriteCmd(0x2C);
-	for (uint8_t i = 0; i < 33; i++)
-		for (uint8_t j = 0; j < 125; j++)
-			tft_WriteData((uint8_t) 0x00);
+	uint32_t result = 1;
+	while (n--)
+		result *= m;
+	return result;
+}
+
+void tft_DrawPoint(uint16_t x, uint16_t y, uint8_t mode)
+{
+	uint16_t x1, y1, n, y2;
+	x1 = x / 2;
+	y1 = y / 4;
+
+	y2 = y - y1 * 4;
+	n = tft_pow(4, (3 - y2));
+	if (x - x1 * 2 == 0)
+		n *= 2;
+	if (mode == 0)
+	{
+		TFT_GRAM[x1 * 0x21 + y1] |= n;
+	}
+	else
+	{
+		TFT_GRAM[x1 * 0x21 + y1] |= n;
+		TFT_GRAM[x1 * 0x21 + y1] = ~TFT_GRAM[x1 * 0x21 + y1];
+		TFT_GRAM[x1 * 0x21 + y1] |= n;
+		TFT_GRAM[x1 * 0x21 + y1] = ~TFT_GRAM[x1 * 0x21 + y1];
+	}
+}
+
+void tft_DrawCircle(uint16_t x0, uint16_t y0, uint8_t r)
+{
+	int a, b;
+	int di;
+	a = 0;
+	b = r;
+	di = 3 - (r << 1); /* 判断下个点位置的标志 */
+
+	while (a <= b)
+	{
+		tft_DrawPoint(x0 + a, y0 - b, 0); /* 5 */
+		tft_DrawPoint(x0 + b, y0 - a, 0); /* 0 */
+		tft_DrawPoint(x0 + b, y0 + a, 0); /* 4 */
+		tft_DrawPoint(x0 + a, y0 + b, 0); /* 6 */
+		tft_DrawPoint(x0 - a, y0 + b, 0); /* 1 */
+		tft_DrawPoint(x0 - b, y0 + a, 0);
+		tft_DrawPoint(x0 - a, y0 - b, 0); /* 2 */
+		tft_DrawPoint(x0 - b, y0 - a, 0); /* 7 */
+		a++;
+		// Bresenham
+		if (di < 0)
+		{
+			di += 4 * a + 6;
+		}
+		else
+		{
+			di += 10 + 4 * (a - b);
+			b--;
+		}
+	}
 }
