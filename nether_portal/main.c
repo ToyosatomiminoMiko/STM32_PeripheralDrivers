@@ -18,6 +18,6 @@ int main(void)
                     for (uint8_t v = 0; v < 16; v++)
                         for (uint8_t w = 0; w < 16; w++)
                             lcd_fill(v * 5 + (x * 80), w * 5 + (y * 80),
-                                     v * 5 + 7 + (x * 80),
-                                     w * 5 + 7 + (y * 80), frame[u][v][w]);
+                                     v * 5 + 5 + (x * 80),
+                                     w * 5 + 5 + (y * 80), frame[u][v][w]);
 }
