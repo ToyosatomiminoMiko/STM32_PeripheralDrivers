@@ -1,4 +1,5 @@
 #include "sw_spi.h"
+
 // FONTS
 /*
  const uint8_t fonts[4][32] =
@@ -129,9 +130,9 @@ void st7302_Init(void)
 	st7302_WriteData(0x64); // 250duty/4=63
 
 	st7302_WriteCmd(0x36); // Memory Data Access Control
-	if (USE_HORIZONTAL == 0)
+	if (ST7302_USE_HORIZONTAL == 0)
 		st7302_WriteData(0x00);
-	else if (USE_HORIZONTAL == 1)
+	else if (ST7302_USE_HORIZONTAL == 1)
 		st7302_WriteData(0x4C);
 
 	st7302_WriteCmd(0x3A); // Data Format Select 4 write for 24 bit
@@ -184,7 +185,7 @@ void st7302_Fill(uint8_t data)
 void st7302_Refresh()
 {
 	uint16_t k1 = 0;
-	if (USE_HORIZONTAL == 0)
+	if (ST7302_USE_HORIZONTAL == 0)
 	{
 		st7302_WriteCmd(0x2A);
 		st7302_WriteData(0x19);
@@ -194,7 +195,7 @@ void st7302_Refresh()
 		st7302_WriteData(0x7C);
 		st7302_WriteCmd(0x2C);
 	}
-	else if (USE_HORIZONTAL == 1)
+	else if (ST7302_USE_HORIZONTAL == 1)
 	{
 		st7302_WriteCmd(0x2A);
 		st7302_WriteData(0x19);
@@ -495,11 +496,11 @@ void gc9a01_Init()
 	gc9a01_WriteData8(0x20);
 
 	gc9a01_WriteCmd(0x36);
-	if (USE_HORIZONTAL == 0)
+	if (GC9A01_USE_HORIZONTAL == 0)
 		gc9a01_WriteData8(0x08);
-	else if (USE_HORIZONTAL == 1)
+	else if (GC9A01_USE_HORIZONTAL == 1)
 		gc9a01_WriteData8(0xC8);
-	else if (USE_HORIZONTAL == 2)
+	else if (GC9A01_USE_HORIZONTAL == 2)
 		gc9a01_WriteData8(0x68);
 	else
 		gc9a01_WriteData8(0xA8);
@@ -778,3 +779,185 @@ void gc9a01_DrawLine(uint16_t x1, uint16_t y1, uint16_t x2, uint16_t y2,
 	}
 }
 #endif
+// NV3023B
+#ifdef NV3023B_ENABLE
+
+void nv3023b_WriteData(uint8_t byte)
+{
+	NV3023B_DC_SET; //  DC high
+	NV3023B_CS_RESET;
+	spi_HfSendByte(byte);
+	NV3023B_CS_SET;
+}
+void nv3023b_WriteData2(uint16_t dat)
+{
+	NV3023B_DC_SET;
+	spi_HfSendByte(dat >> 8);
+	spi_HfSendByte(dat & 0xFF);
+	NV3023B_DC_SET;
+}
+void nv3023b_WriteCmd(uint8_t byte)
+{
+	NV3023B_DC_RESET; //  DC low
+	NV3023B_CS_RESET;
+	spi_HfSendByte(byte);
+	NV3023B_CS_SET;
+}
+void nv3023b_AddressSet(uint16_t xs, uint16_t ys, uint16_t xe, uint16_t ye)
+{
+	nv3023b_WriteCmd(0x2a); // 列地址设置
+	nv3023b_WriteData2(xs);
+	nv3023b_WriteData2(xe);
+	nv3023b_WriteCmd(0x2b); // 行地址设置
+	nv3023b_WriteData2(ys);
+	nv3023b_WriteData2(ye);
+	nv3023b_WriteCmd(0x2c); // 储存器写
+}
+void nv3023b_Fill(uint16_t xs, uint16_t ys, uint16_t xe, uint16_t ye,
+		uint16_t color)
+{
+	uint16_t i, j;
+	nv3023b_AddressSet(xs, ys, xe - 1, ye - 1);
+	for (j = ys; j < ye; j++)
+	{
+		for (i = xs; i < xe; i++)
+		{
+			nv3023b_WriteData2(color);
+		}
+	}
+}
+void nv3023b_Init(void)
+{
+	NV3023B_RES_SET;
+	HAL_Delay(20);
+	NV3023B_RES_RESET;
+	HAL_Delay(200);
+	NV3023B_RES_SET;
+	HAL_Delay(120);
+	NV3023B_BL_SET;
+	//----------------Star Initial Sequence-------//
+	nv3023b_WriteCmd(0xff);
+	nv3023b_WriteData(0xa5); //
+	nv3023b_WriteCmd(0x3E);
+	nv3023b_WriteData(0x08); //
+	nv3023b_WriteCmd(0x3A);
+	nv3023b_WriteData(0x55);
+	nv3023b_WriteCmd(0x82);
+	nv3023b_WriteData(0x00);
+	nv3023b_WriteCmd(0x98);
+	nv3023b_WriteData(0x00);
+	nv3023b_WriteCmd(0x63);
+	nv3023b_WriteData(0x10);
+	nv3023b_WriteCmd(0x64);
+	nv3023b_WriteData(0x10);
+	nv3023b_WriteCmd(0xB4);
+	nv3023b_WriteData(0x34); // 34 55
+	nv3023b_WriteCmd(0xB5);
+	nv3023b_WriteData(0x30);
+	nv3023b_WriteCmd(0x83);
+	nv3023b_WriteData(0x03);
+	nv3023b_WriteCmd(0x86); //
+	nv3023b_WriteData(0x00);
+	nv3023b_WriteCmd(0x87);
+	nv3023b_WriteData(0x16);
+	nv3023b_WriteCmd(0x88); // VCOM
+	nv3023b_WriteData(0x09);
+	nv3023b_WriteCmd(0x89); //
+	nv3023b_WriteData(0x2f);
+	nv3023b_WriteCmd(0x93); //
+	nv3023b_WriteData(0x63);
+	nv3023b_WriteCmd(0x96);
+	nv3023b_WriteData(0x81);
+	nv3023b_WriteCmd(0xC3);
+	nv3023b_WriteData(0x01); //
+	nv3023b_WriteCmd(0xE6);
+	nv3023b_WriteData(0x00);
+	nv3023b_WriteCmd(0x99);
+	nv3023b_WriteData(0x01);
+	////////////////////////gamma_set//////////////////////////////////////
+	nv3023b_WriteCmd(0x70);
+	nv3023b_WriteData(0x07); // VRP 0
+	nv3023b_WriteCmd(0x71);
+	nv3023b_WriteData(0x1b); // VRP 1
+	nv3023b_WriteCmd(0x72);
+	nv3023b_WriteData(0x08); // VRP 2
+	nv3023b_WriteCmd(0x73);
+	nv3023b_WriteData(0x0f); // VRP 3
+	nv3023b_WriteCmd(0x74);
+	nv3023b_WriteData(0x16); // VRP 6
+	nv3023b_WriteCmd(0x75);
+	nv3023b_WriteData(0x1A); // VRP 8
+	nv3023b_WriteCmd(0x76);
+	nv3023b_WriteData(0x3c); // VRP 10
+	nv3023b_WriteCmd(0x77);
+	nv3023b_WriteData(0x0a); // VRP 14
+	nv3023b_WriteCmd(0x78);
+	nv3023b_WriteData(0x05); // VRP 17
+	nv3023b_WriteCmd(0x79);
+	nv3023b_WriteData(0x3a); // VRP 21
+	nv3023b_WriteCmd(0x7a);
+	nv3023b_WriteData(0x06); // VRP 23
+	nv3023b_WriteCmd(0x7b);
+	nv3023b_WriteData(0x0b); // VRP 25
+	nv3023b_WriteCmd(0x7c);
+	nv3023b_WriteData(0x12); // VRP 28
+	nv3023b_WriteCmd(0x7d);
+	nv3023b_WriteData(0x0b); // VRP 29
+	nv3023b_WriteCmd(0x7e);
+	nv3023b_WriteData(0x0a); // VRP 30
+	nv3023b_WriteCmd(0x7f);
+	nv3023b_WriteData(0x08); // VRP 31
+	nv3023b_WriteCmd(0xa0);
+	nv3023b_WriteData(0x0b); // VRN 0
+	nv3023b_WriteCmd(0xa1);
+	nv3023b_WriteData(0x36); // VRN 1
+	nv3023b_WriteCmd(0xa2);
+	nv3023b_WriteData(0x0b); // VRN 2
+	nv3023b_WriteCmd(0xa3);
+	nv3023b_WriteData(0x0c); // VRN 3
+	nv3023b_WriteCmd(0xa4);
+	nv3023b_WriteData(0x08); // VRN 6
+	nv3023b_WriteCmd(0xa5);
+	nv3023b_WriteData(0x22); // VRN 8
+	nv3023b_WriteCmd(0xa6);
+	nv3023b_WriteData(0x43); // VRN 10
+	nv3023b_WriteCmd(0xa7);
+	nv3023b_WriteData(0x04); // VRN 14
+	nv3023b_WriteCmd(0xa8);
+	nv3023b_WriteData(0x05); // VRN 17
+	nv3023b_WriteCmd(0xa9);
+	nv3023b_WriteData(0x3F); // VRN 21
+	nv3023b_WriteCmd(0xaa);
+	nv3023b_WriteData(0x0A); // VRN 23
+	nv3023b_WriteCmd(0xab);
+	nv3023b_WriteData(0x11); // VRN 25
+	nv3023b_WriteCmd(0xac);
+	nv3023b_WriteData(0x0d); // VRN 28
+	nv3023b_WriteCmd(0xad);
+	nv3023b_WriteData(0x06); // VRN 29
+	nv3023b_WriteCmd(0xae);
+	nv3023b_WriteData(0x3b); // VRN 30
+	nv3023b_WriteCmd(0xaf);
+	nv3023b_WriteData(0x07); // VRN 31
+	//////////////////////////////////////////////////////////////////
+	nv3023b_WriteCmd(0xff);
+	nv3023b_WriteData(0x00);
+	nv3023b_WriteCmd(0x11);
+	HAL_Delay(120);
+	nv3023b_WriteCmd(0x36); // MX, MY, RGB mode
+	if (NV3023B_USE_HORIZONTAL == 0)
+		nv3023b_WriteData(0x48);
+	else if (NV3023B_USE_HORIZONTAL == 1)
+		nv3023b_WriteData(0x88);
+	else if (NV3023B_USE_HORIZONTAL == 2)
+		nv3023b_WriteData(0xF8);
+	else
+		nv3023b_WriteData(0x28);
+	nv3023b_WriteCmd(0x35);
+	nv3023b_WriteData(0x00);
+	nv3023b_WriteCmd(0x29);
+	HAL_Delay(100);
+}
+
+#endif
+
