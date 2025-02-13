@@ -1,7 +1,8 @@
 #ifndef BSP_SOFTWARE_SPI_SW_SPI_H_
 #define BSP_SOFTWARE_SPI_SW_SPI_H_
 #include "main.h"
-
+//#define GC9A01_ENABLE
+#define NV3023B_ENABLE
 // VFD
 #ifdef VFD_ENABLE
 #define VFD_CS_SET \
@@ -56,8 +57,6 @@
 #define SPI_HSB_SCL_RESET ST7302_SCL_RESET
 #define SPI_HSB_SDA_SET ST7302_SDA_SET
 #define SPI_HSB_SDA_RESET ST7302_SDA_RESET
-// other
-#define USE_HORIZONTAL 0
 #endif
 // GC9A01
 #ifdef GC9A01_ENABLE
@@ -91,8 +90,40 @@
 #define SPI_HSB_SCL_RESET GC9A01_SCL_RESET
 #define SPI_HSB_SDA_SET GC9A01_SDA_SET
 #define SPI_HSB_SDA_RESET GC9A01_SDA_RESET
-// OTHER
-#define USE_HORIZONTAL 0
+#endif
+#define NV3023B_ENABLE
+// NV3023B
+#ifdef NV3023B_ENABLE
+#define NV3023B_CS_SET \
+    HAL_GPIO_WritePin(NV3023B_CS_GPIO_Port, NV3023B_CS_Pin, GPIO_PIN_SET)
+#define NV3023B_CS_RESET \
+    HAL_GPIO_WritePin(NV3023B_CS_GPIO_Port, NV3023B_CS_Pin, GPIO_PIN_RESET)
+#define NV3023B_SCL_SET \
+    HAL_GPIO_WritePin(NV3023B_SCL_GPIO_Port, NV3023B_SCL_Pin, GPIO_PIN_SET)
+#define NV3023B_SCL_RESET \
+    HAL_GPIO_WritePin(NV3023B_SCL_GPIO_Port, NV3023B_SCL_Pin, GPIO_PIN_RESET)
+#define NV3023B_SDA_SET \
+    HAL_GPIO_WritePin(NV3023B_SDA_GPIO_Port, NV3023B_SDA_Pin, GPIO_PIN_SET)
+#define NV3023B_SDA_RESET \
+    HAL_GPIO_WritePin(NV3023B_SDA_GPIO_Port, NV3023B_SDA_Pin, GPIO_PIN_RESET)
+#define NV3023B_RES_SET \
+    HAL_GPIO_WritePin(NV3023B_RES_GPIO_Port, NV3023B_RES_Pin, GPIO_PIN_SET)
+#define NV3023B_RES_RESET \
+    HAL_GPIO_WritePin(NV3023B_RES_GPIO_Port, NV3023B_RES_Pin, GPIO_PIN_RESET)
+#define NV3023B_DC_SET \
+    HAL_GPIO_WritePin(NV3023B_DC_GPIO_Port, NV3023B_DC_Pin, GPIO_PIN_SET)
+#define NV3023B_DC_RESET \
+    HAL_GPIO_WritePin(NV3023B_DC_GPIO_Port, NV3023B_DC_Pin, GPIO_PIN_RESET)
+#define NV3023B_BL_SET \
+    HAL_GPIO_WritePin(NV3023B_BL_GPIO_Port, NV3023B_BL_Pin, GPIO_PIN_SET)
+#define NV3023B_BL_RESET \
+    HAL_GPIO_WritePin(NV3023B_BL_GPIO_Port, NV3023B_BL_Pin, GPIO_PIN_RESET)
+// SPI
+#define SPI_HSB
+#define SPI_HSB_SCL_SET NV3023B_SCL_SET
+#define SPI_HSB_SCL_RESET NV3023B_SCL_RESET
+#define SPI_HSB_SDA_SET NV3023B_SDA_SET
+#define SPI_HSB_SDA_RESET NV3023B_SDA_RESET
 #endif
 
 void spi_LfSendByte(uint8_t byte);
@@ -113,6 +144,8 @@ uint32_t st7302_pow(uint8_t m, uint8_t n);
 void st7302_DrawPoint(uint16_t x, uint16_t y, uint8_t mode);
 void st7302_DrawCircle(uint16_t x0, uint16_t y0, uint8_t r);
 void st7302_GramSet(uint16_t address, uint8_t data);
+//void st7302_DrawVertical(uint8_t x, uint8_t y);
+//void st7302_DrawHorizontal(uint16_t address);
 void gc9a01_WriteData8(uint8_t byte);
 void gc9a01_WriteData16(uint16_t byte);
 void gc9a01_WriteCmd(uint8_t byte);
@@ -124,4 +157,16 @@ void gc9a01_DrawPoint(uint16_t x, uint16_t y, uint16_t color);
 void gc9a01_DrawCircle(uint16_t x0, uint16_t y0, uint8_t r, uint16_t color);
 void gc9a01_DrawLine(uint16_t x1, uint16_t y1, uint16_t x2, uint16_t y2,
 		uint16_t color);
+// nv3023b LCD 128*160
+void nv3023b_WriteData(uint8_t byte);
+void nv3023b_WriteCmd(uint8_t byte);
+void nv3023b_AddressSet(uint16_t xs, uint16_t ys, uint16_t xe, uint16_t ye);
+void nv3023b_Init(void);
+void nv3023b_Fill(uint16_t xs, uint16_t ys, uint16_t xe, uint16_t ye,
+		uint16_t color);
+void nv3023b_WriteData2(uint16_t dat);
+// HORIZONTAL
+#define NV3023B_USE_HORIZONTAL 0
+#define GC9A01_USE_HORIZONTAL 0
+#define ST7302_USE_HORIZONTAL 0
 #endif /* BSP_SOFTWARE_SPI_SW_SPI_H_ */
