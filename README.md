@@ -5,7 +5,7 @@
 3. 作者能力有限,这些代码和文档难免会有错误和不足,请谅解或提交**Issue**
 4. 本存储库的许可证不适用于**正点原子团队(ALIENTEK)的代码**copyright归原作者所有,在此仅用于学习
 
-## § 0x00 感谢名单 Bilibili
+## 感谢名单 Bilibili
 
 他们的代码给了我重要的参考,放在这里以表示感谢
 
@@ -19,7 +19,7 @@
     [一直在入门啊(gitee教程代码)](https://gitee.com/siyu233/Stm32Code_1)<br>
     教程的代码也采用了*GPL-3.0*
 
-## § 0x01 OLED(0.96) SSD1306
+## OLED(0.96) SSD1306
 
 OLED 显示器(0.96 寸)
 
@@ -44,7 +44,7 @@ OLED 显示器(0.96 寸)
 
 - `oled_debugger.html`用于验证绘图算法, 纯前端实现
 
-## § 0x02 EEPROM 24C02
+## EEPROM 24C02
 
 24C02 带电可擦可编程只读存储器
 
@@ -96,3 +96,13 @@ OLED 显示器(0.96 寸)
 ### ST7302
 
 tft lcd 仿墨水屏
+
+## nether_portal
+
+MC下界传送门动画显示
+`gif_parser.py`用于读取传送门GIF素材并转换成数组
+
+## OLED_canvas
+
+OLED 图案绘制工具
+可导出为ssd1306数组
