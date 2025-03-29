@@ -8,8 +8,8 @@
 
 extern uint8_t GRAM[8][128];
 
-HAL_StatusTypeDef oled_Write_Command(uint8_t i2c_cmd);
-HAL_StatusTypeDef oled_Write_Data(uint8_t i2c_cmd);
+HAL_StatusTypeDef oled_WriteCommand(uint8_t i2c_cmd);
+HAL_StatusTypeDef oled_WriteData(uint8_t i2c_cmd);
 void oled_Init();
 void oled_Clear();
 void oled_Full();
