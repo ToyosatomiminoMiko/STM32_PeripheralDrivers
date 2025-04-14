@@ -79,10 +79,9 @@ HAL_StatusTypeDef oled_WriteData(uint8_t i2c_cmd)
 
 void oled_NewFrame()
 {
-    uint8_t m, n;
     const uint8_t zero = 0;
-    for (m = 0; m < 8; m++) {
-        for (n = 0; n < 128; n++) {
+    for (uint8_t m = 0; m < 8; m++) {
+        for (uint8_t n = 0; n < 128; n++) {
             GRAM[m][n] = zero;
         }
     }
@@ -92,10 +91,9 @@ void oled_NewFrame()
 void oled_SoftCirculation()
 {
     uint8_t temp;
-    uint8_t m, n;
-    for (m = 0; m < 8; m++) {
+    for (uint8_t m = 0; m < 8; m++) {
         temp = GRAM[m][0];
-        for (n = 0; n < 127; n++) {
+        for (uint8_t n = 0; n < 127; n++) {
             GRAM[m][n] = GRAM[m][n + 1];
         }
         GRAM[m][127] = temp;
@@ -123,45 +121,35 @@ void oled_ShowFrame()
 
 void oled_Clear()
 {
-    uint8_t m, n;
-    for (m = 0; m < 8; m++) {
+    for (uint8_t m = 0; m < 8; m++) {
         oled_WriteCommand(0xb0 + m); // set page address(0~7)
         oled_WriteCommand(0x00);     // set display column low address
         oled_WriteCommand(0x10);     // set display column low address
-        for (n = 0; n < 128; n++)
+        for (uint8_t n = 0; n < 128; n++)
             oled_WriteData(0);
     } // update
 }
 
 void oled_Full()
 {
-    uint8_t m, n;
-    for (m = 0; m < 8; m++) {
+    for (uint8_t m = 0; m < 8; m++) {
         oled_WriteCommand(0xb0 + m); // set page address(0~7)
         oled_WriteCommand(0x00);     // set display column low address
         oled_WriteCommand(0x10);     // set display column high address
-        for (n = 0; n < 128; n++)
+        for (uint8_t n = 0; n < 128; n++)
             oled_WriteData(0b11111111);
     } // update
 }
 
 void oled_Test()
 {
-    uint8_t m, n;
-    for (m = 0; m < 8; m++) {
+    for (uint8_t m = 0; m < 8; m++) {
         oled_WriteCommand(0xb0 + m); // set page address(0~7)
         oled_WriteCommand(0x00);     // set display column low address
         oled_WriteCommand(0x10);     // set display column high address
-        for (n = 0; n < 128; n++)
+        for (uint8_t n = 0; n < 128; n++)
             oled_WriteData(0xAA);
     } // update
-}
-
-void oled_SetPixel(uint16_t x, uint16_t y)
-{
-    if (x >= 128 || y >= 64)
-        return;
-    GRAM[y / 8][x] |= 0b1 << (y % 8);
 }
 
 void oled_SetFrist()
@@ -170,7 +158,7 @@ void oled_SetFrist()
         GRAM[i][0] = 0x00;
 }
 
-void oled_SetPoint(uint16_t x, uint16_t y)
+void oled_SetPoint(uint8_t x, uint8_t y)
 {
     if (x >= 128)
         x = 127;
@@ -213,8 +201,7 @@ void oled_ShowNumber(uint8_t num, uint8_t position, uint8_t line)
 {
     if (num < 0 || num >= 10 || position > 120 || position < 0 || line < 0 || line > 8)
         return;
-    uint8_t n;
-    for (n = position; n < (position + 3); n++) {
+    for (uint8_t n = position; n < (position + 3); n++) {
         GRAM[line][n] = numbers_3x5[num][n - position];
     }
 }
@@ -321,7 +308,7 @@ void oled_HW_rolling()
     oled_WriteCommand(0x7F); // row stop
 }
 
-void oled_DrawCircle(uint16_t x0, uint16_t y0, uint8_t r)
+void oled_DrawCircle(uint8_t x0, uint8_t y0, uint8_t r)
 {
     int a, b;
     int di;
