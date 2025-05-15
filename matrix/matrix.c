@@ -3,62 +3,96 @@
 void matrix_multiply_4x4(Matrix_4x4 result, const Matrix_4x4 a,
 		const Matrix_4x4 b)
 {
-	for (uint8_t x = 0; x < 4; x++) // 遍历结果矩阵的行
-		for (uint8_t y = 0; y < 4; y++) // 遍历结果矩阵的列
-			result[x][y] = a[x][0] * b[0][y] + a[x][1] * b[1][y]
-					+ a[x][2] * b[2][y] + a[x][3] * b[3][y];
+	Matrix_4x4 tmp;
+	for (uint8_t i = 0; i < 4; ++i)
+	{
+		for (uint8_t j = 0; j < 4; ++j)
+		{
+			float_t sum = 0;
+			for (uint8_t k = 0; k < 4; ++k)
+			{
+				sum += a[i][k] * b[k][j];
+			}
+			tmp[i][j] = sum;
+		}
+	}
+	memcpy(result, tmp, sizeof(Matrix_4x4));
 }
 
-void matrix_vector_multiply(Vector_4 result, const Matrix_4x4 mat,
-		const Vector_4 vec)
+void matrix_vector_multiply(Vector_4 result, const Matrix_4x4 matrix,
+		const Vector_4 vector)
 {
-	for (uint8_t i = 0; i < 4; i++) // 遍历结果向量的每个分量
-		result[i] = mat[i][0] * vec[0] + mat[i][1] * vec[1] + mat[i][2] * vec[2]
-				+ mat[i][3] * vec[3];
+	Vector_4 tmp;
+	for (uint8_t i = 0; i < 4; ++i)
+	{
+		tmp[i] = 0;
+		for (uint8_t k = 0; k < 4; ++k)
+		{
+			tmp[i] += matrix[i][k] * vector[k];
+		}
+	}
+	memcpy(result, tmp, sizeof(Vector_4));
 }
 
 void translate_3d(Matrix_4x4 homogeneous, float_t const tx, float_t const ty,
 		float_t const tz)
 {
-	homogeneous[0][3] = tx;
-	homogeneous[1][3] = ty;
-	homogeneous[2][3] = ty;
+	Matrix_4x4 rx =
+	{
+	{ 1, 0, 0, tx },
+	{ 0, 1, 0, ty },
+	{ 0, 0, 1, tz },
+	{ 0, 0, 0, 1 } };
+	memcpy(homogeneous, rx, sizeof(Matrix_4x4));
 }
 
 void rotate_x_3d(Matrix_4x4 homogeneous, float_t theta)
 {
 	float c = cos(theta);
 	float s = sin(theta);
-	homogeneous[1][1] = c;
-	homogeneous[1][2] = -s;
-	homogeneous[2][1] = s;
-	homogeneous[2][2] = c;
+	Matrix_4x4 rx =
+	{
+	{ 1, 0, 0, 0 },
+	{ 0, c, -s, 0 },
+	{ 0, s, c, 0 },
+	{ 0, 0, 0, 1 } };
+	memcpy(homogeneous, rx, sizeof(Matrix_4x4));
 }
 
 void rotate_y_3d(Matrix_4x4 homogeneous, float_t theta)
 {
 	float c = cos(theta);
 	float s = sin(theta);
-	homogeneous[0][0] = c;
-	homogeneous[0][2] = s;
-	homogeneous[2][0] = -s;
-	homogeneous[2][2] = c;
+	Matrix_4x4 rx =
+	{
+	{ c, 0, s, 0 },
+	{ 0, 1, 0, 0 },
+	{ -s, 0, c, 0 },
+	{ 0, 0, 0, 1 } };
+	memcpy(homogeneous, rx, sizeof(Matrix_4x4));
 }
 
 void rotate_z_3d(Matrix_4x4 homogeneous, float_t theta)
 {
 	float c = cos(theta);
 	float s = sin(theta);
-	homogeneous[0][0] = c;
-	homogeneous[0][1] = -s;
-	homogeneous[1][0] = s;
-	homogeneous[1][1] = c;
+	Matrix_4x4 rx =
+	{
+	{ c, -s, 0, 0 },
+	{ s, c, 0, 0 },
+	{ 0, 0, 1, 0 },
+	{ 0, 0, 0, 1 } };
+	memcpy(homogeneous, rx, sizeof(Matrix_4x4));
 }
 
 void scale_3d(Matrix_4x4 homogeneous, float_t sx, float_t sy, float_t sz)
 {
-	homogeneous[0][0] = sx;
-	homogeneous[1][1] = sy;
-	homogeneous[2][2] = sz;
+	Matrix_4x4 rx =
+	{
+	{ sx, 0, 0, 0 },
+	{ 0, sy, 0, 0 },
+	{ 0, 0, sz, 0 },
+	{ 0, 0, 0, 1 } };
+	memcpy(homogeneous, rx, sizeof(Matrix_4x4));
 }
 
